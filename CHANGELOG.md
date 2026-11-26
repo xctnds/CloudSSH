@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.12.6] - 2026-11-25
+
+### Added
+
+- **Windows 远程桌面全屏分辨率**：默认仍为「仅缩放」。支持动态分辨率的 Windows 可在全屏工具栏选「适配全屏」、720p 或 1080p，向远端请求调整实际分辨率；退出全屏后恢复窗口尺寸同步。中继选址策略不变。关联 Issue：[#213](https://github.com/newbietan/CloudSSH/issues/213)。
+
+### Fixed
+
+- **Windows 首次证书确认与连接诊断**：确认期间上游提前断开时，在租约有效且等待未超时的前提下保留弹窗；成功保存信任、且中继确认上游已断开后，才用新票据重连一次，并复核设备修订和证书指纹。分别提示 Windows 登录被拒绝、安全协商失败、首帧前断开及确认超时。关联 Issue：[#216](https://github.com/newbietan/CloudSSH/issues/216)。
+- **MCP 命令执行结果**：区分已知退出码、明确未执行和执行结果未知；为通道拒绝、超时、连接中断及缺少退出状态提供对应诊断，不自动重试结果未知的命令。
+
+### Changed
+
+- **MCP 操作日志**：按本地日期分组，合并相邻的成功执行、读取和列目录，显示次数和最长单次耗时。写入和异常逐条展示，可按服务器、异常状态筛选或展开逐条记录；仍不保存命令、路径和输出。
+
+## [2.12.5] - 2026-11-25
+
+### Added
+
+- **Windows 远程桌面双栈直连**：支持公网 IPv6、域名和 DDNS，以及既有公网 IPv4。域名在每次连接时校验 A/AAAA，双栈可在 TCP 未建立时换地址。DDNS 改址不影响既有登录配置，仍严格核对 Windows 证书；内网设备继续使用 Cloudflare Tunnel。关联 Issue：[#208](https://github.com/newbietan/CloudSSH/issues/208)。
+
+### Fixed
+
+- **SSH 保活兼容性**：修复 MikroTik RouterOS 已回复保活请求却被误判为超时并重连的问题。仅将与本次探针序号匹配的“不支持”回复视为在线，保留真正无响应时的断线保护。关联 Issue：[#211](https://github.com/newbietan/CloudSSH/issues/211)。
+- **发布核验**：测试运行成功但 GitHub Actions 的步骤详情尚未同步时，会限时重查同一次运行。明确失败、取消、跳过或最终缺少验证证据，仍会阻止发布。
+
+### Changed
+
+- **发布后分支同步**：生产部署成功后自动将仍停留在发布候选的 `test` 对齐到 `main`，不再因这次同步重复触发 GitHub Actions 构建。发布期间新增的 `test` 提交会保留；正常开发推送仍完整验证。
+
+## [2.12.4] - 2026-11-24
+
+### Added
+
+- **Windows 远程桌面自定义直连端口**：新增或编辑 Windows Server 时可填写 TCP 端口，默认仍为 `3389`，已有设备无需迁移配置。更改端口时需重新录入 Windows 密码并核对证书指纹。Cloudflare Tunnel 的目标端口仍在 `cloudflared` 中配置。关联 Issue：[#208](https://github.com/newbietan/CloudSSH/issues/208)。
+
+### Changed
+
+- Windows 设备表单的线路、主机和登录字段图标与 SSH 表单统一。
+
+## [2.12.3] - 2026-11-24
+
+### Fixed
+
+- **Windows 远程桌面键盘焦点**：桌面就绪或进出全屏后可直接打字，回车不再误触「返回」或切换全屏。用户主动选中的「返回」按钮和证书确认弹窗仍保留焦点。
+- **右键和鼠标侧键**：在远程画面内点击右键不再弹出浏览器菜单，前进／后退侧键也不会触发浏览器导航或断开桌面；画面外的浏览器操作不变。
+- **远程桌面快捷键冲突**：右 Shift + D 不再触发 FreeRDP 本地断开快捷键；在 RDP 工具栏按 Esc 也不会切换到底层 SSH 标签。
+
 ## [2.12.2] - 2026-11-24
 
 ### Added
